@@ -38,6 +38,7 @@
       <Filter>源文件</Filter>
     </None>
     <None Include="README.md" />
+    <None Include="LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\CMakeLists.txt">

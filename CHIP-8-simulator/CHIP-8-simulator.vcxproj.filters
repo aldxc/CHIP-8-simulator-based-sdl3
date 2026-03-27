@@ -34,15 +34,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\CONTRIBUTING.md">
-      <Filter>源文件</Filter>
-    </None>
-    <None Include="README.md" />
-    <None Include="LICENSE" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\CMakeLists.txt">
       <Filter>资源文件</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="..\README.md">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

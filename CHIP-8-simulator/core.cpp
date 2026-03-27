@@ -79,13 +79,11 @@ namespace chip8 {
 		// 默认 PC 增量为 2 字节
 		uint16_t pcIncrement = 2;
 		
-		// uint16_t 两字节 0x0 = 0000 0000 0000 0000 四位十六进制数字
-
-		auto nnn = opcode & 0x0FFF;	// 12位地址：操作码的后3位，用于跳转/调用目标地址
-		auto n = opcode & 0x000F;	// 4位半字节：操作码最后一位，用于精灵高度、位移量等常数
-		auto x = (opcode & 0x0F00) >> 8;	// 4位寄存器索引：第二位，指向寄存器 V0-VF
-		auto y = (opcode & 0x00F0) >> 4;	// 4位寄存器索引：第三位，指向寄存器 V0-VF
-		auto kk = opcode & 0x00FF;	// 8位立即数：操作码后两位，用于与寄存器比较/赋值的值
+        auto nnn = opcode & 0x0FFF;
+		auto n = opcode & 0x000F;
+		auto x = (opcode & 0x0F00) >> 8;
+		auto y = (opcode & 0x00F0) >> 4;
+		auto kk = opcode & 0x00FF;
 
 		switch (opcode & 0xF000) {
 		case 0x0000:

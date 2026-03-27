@@ -1,10 +1,9 @@
 #include "Platform.h"
+#include "Platform.h"
+
 #include <vector>
-#include <cstring>
 
 namespace chip8 {
-
-//Platform::Platform() = default;
 
 Platform::~Platform() {
     shutdown();
@@ -19,30 +18,23 @@ bool Platform::init(int scale) {
     windowWidth_ = kDisplayWidth * scale_;
     windowHeight_ = kDisplayHeight * scale_;
 
-    // 创建窗口
-    window_ = SDL_CreateWindow("CHIP-8", windowWidth_, windowHeight_, 0);
+    window_.reset(SDL_CreateWindow("CHIP-8", windowWidth_, windowHeight_, 0));
     if (!window_) {
         SDL_Quit();
         return false;
     }
 
-    // 创建渲染器
-    renderer_ = SDL_CreateRenderer(window_, nullptr);
-    //renderer_ = SDL_CreateRenderer(window_, -1, 0);
+    renderer_.reset(SDL_CreateRenderer(window_.get(), nullptr));
     if (!renderer_) {
-        SDL_DestroyWindow(window_);
-        window_ = nullptr;
+        window_.reset();
         SDL_Quit();
         return false;
     }
 
-    // 创建纹理，纹理大小为 CHIP-8 原始分辨率（64x32），渲染时拉伸
-    texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, kDisplayWidth, kDisplayHeight);
+    texture_.reset(SDL_CreateTexture(renderer_.get(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, kDisplayWidth, kDisplayHeight));
     if (!texture_) {
-        SDL_DestroyRenderer(renderer_);
-        renderer_ = nullptr;
-        SDL_DestroyWindow(window_);
-        window_ = nullptr;
+        renderer_.reset();
+        window_.reset();
         SDL_Quit();
         return false;
     }
@@ -51,24 +43,14 @@ bool Platform::init(int scale) {
 }
 
 void Platform::shutdown() {
-    if (texture_) {
-        SDL_DestroyTexture(texture_);
-        texture_ = nullptr;
-    }
-    if (renderer_) {
-        SDL_DestroyRenderer(renderer_);
-        renderer_ = nullptr;
-    }
-    if (window_) {
-        SDL_DestroyWindow(window_);
-        window_ = nullptr;
-    }
+    texture_.reset();
+    renderer_.reset();
+    window_.reset();
     SDL_Quit();
 }
 
 int Platform::mapKey(SDL_Scancode key) const {
-    // 常见键位映射：
-    // 键盘布局:
+    // Keyboard layout:
     // 1 2 3 4    -> CHIP-8 1 2 3 C
     // Q W E R    -> CHIP-8 4 5 6 D
     // A S D F    -> CHIP-8 7 8 9 E
@@ -114,7 +96,6 @@ void Platform::pollEvents(bool& running, Chip8Cpu& cpu) {
             if (mapped >= 0) {
                 cpu.setKey(static_cast<uint8_t>(mapped), pressed);
             }
-            // 处理退出快捷键 Esc
             if (key == SDL_SCANCODE_ESCAPE && pressed) {
                 running = false;
                 return;
@@ -130,36 +111,26 @@ void Platform::render(const std::array<bool, kDisplayWidth * kDisplayHeight>& di
     if (!displayDirty)
         return;
 
-    // 像素缓冲（RGBA8888）
     std::vector<uint32_t> pixels(kDisplayWidth * kDisplayHeight);
     for (int i = 0; i < kDisplayWidth * kDisplayHeight; ++i) {
-        if (display[i]) {
-            // 白色像素
-            pixels[i] = 0xFFFFFFFFu;
-        } else {
-            // 黑色像素
-            pixels[i] = 0xFF000000u;
-        }
+        pixels[i] = display[i] ? 0xFFFFFFFFu : 0xFF000000u;
     }
 
-    // 更新纹理数据
-    SDL_UpdateTexture(texture_, nullptr, pixels.data(), kDisplayWidth * sizeof(uint32_t));
+    SDL_UpdateTexture(texture_.get(), nullptr, pixels.data(), kDisplayWidth * sizeof(uint32_t));
 
-    // 清除渲染目标并复制纹理（拉伸到窗口）
-    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-    SDL_RenderClear(renderer_);
+    SDL_SetRenderDrawColor(renderer_.get(), 0, 0, 0, 255);
+    SDL_RenderClear(renderer_.get());
 
-    //SDL_FRect dstRect = { 0, 0, windowWidth_, windowHeight_ };
-    SDL_RenderTexture(renderer_, texture_, nullptr, nullptr);
-    SDL_RenderPresent(renderer_);
+    SDL_RenderTexture(renderer_.get(), texture_.get(), nullptr, nullptr);
+    SDL_RenderPresent(renderer_.get());
 }
 
 void Platform::clear() {
     if (!renderer_)
         return;
-    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-    SDL_RenderClear(renderer_);
-    SDL_RenderPresent(renderer_);
+    SDL_SetRenderDrawColor(renderer_.get(), 0, 0, 0, 255);
+    SDL_RenderClear(renderer_.get());
+    SDL_RenderPresent(renderer_.get());
 }
 
 } // namespace chip8

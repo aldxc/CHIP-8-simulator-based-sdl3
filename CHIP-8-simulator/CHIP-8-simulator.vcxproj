@@ -138,12 +138,11 @@
     <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\CONTRIBUTING.md" />
-    <None Include="LICENSE" />
-    <None Include="README.md" />
+    <Text Include="..\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\CMakeLists.txt" />
+    <None Include="..\LICENSE" />
+    <None Include="..\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

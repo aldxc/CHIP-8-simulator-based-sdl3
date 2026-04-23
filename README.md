@@ -1,5 +1,4 @@
 # CHIP-8 Simulator
-# CHIP-8 Simulator
 
 这是一个用 `C++17` 和 `SDL3` 写的简单 `CHIP-8` 模拟器。代码结构比较直接，适合拿来学习、调试，或者继续扩展功能。
 
